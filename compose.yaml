@@ -49,8 +49,11 @@ services:
       - 8787:8000
     env_file:
       - .env
+    volumes:
+      - torrents:/app/${FOLDER_TORRENT_FILES:-torrents}
     <<: [ *default-dns, *default-logging ]
     network_mode: bridge
 
 volumes:
   ygg-config:
+  torrents:

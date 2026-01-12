@@ -10,6 +10,7 @@ mcp: FastMCP[Any] = FastMCP("Fr Torrent Search")
 
 
 client = FrTorrentApi()
+client._ensure_initialized()
 
 
 @mcp.tool()

@@ -24,7 +24,6 @@ class FrTorrentApi(BaseTorrentApi):
         self.apis: list[BaseTorrentApi] = []
         self.api_names: list[str] = []
         self._initialized = False
-        self._ensure_initialized()
 
     def _ensure_initialized(self) -> None:
         """Ensure that APIs are discovered and initialized."""
