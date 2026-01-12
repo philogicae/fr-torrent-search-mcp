@@ -10,7 +10,7 @@ mcp: FastMCP[Any] = FastMCP("Fr Torrent Search")
 
 
 client = FrTorrentApi()
-client._ensure_initialized()
+client.ensure_initialized()
 
 
 @mcp.tool()
@@ -55,7 +55,7 @@ def search_torrents(
 
 
 @mcp.tool()
-def get_torrent(torrent_id: str) -> str | None:
+def get_torrent(torrent_id: str) -> str:
     """Get a specific torrent (either magnet link or torrent file path) by id."""
     logger.info(f"Getting torrent for: {torrent_id}")
     result = client.get_torrent(torrent_id)
@@ -65,7 +65,7 @@ def get_torrent(torrent_id: str) -> str | None:
 
 
 @mcp.tool()
-def get_magnet_link(torrent_id: str) -> str | None:
+def get_magnet_link(torrent_id: str) -> str:
     """Get the magnet link for a specific torrent by id."""
     logger.info(f"Getting magnet link for torrent: {torrent_id}")
     magnet_link: str | None = client.get_magnet_link(torrent_id)
@@ -73,7 +73,8 @@ def get_magnet_link(torrent_id: str) -> str | None:
 
 
 @mcp.tool()
-def download_torrent_file(torrent_id: str, output_dir: str | None = None) -> str | None:
+def download_torrent_file(torrent_id: str, output_dir: str | None = None) -> str:
     """Download the torrent file for a specific torrent by id."""
     logger.info(f"Downloading torrent file for torrent: {torrent_id}")
-    return client.download_torrent_file(torrent_id, output_dir)
+    result = client.download_torrent_file(torrent_id, output_dir)
+    return result or "Failed to download torrent file"

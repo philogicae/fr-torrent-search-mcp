@@ -4,6 +4,16 @@ import pytest
 import requests
 
 
+@pytest.fixture(scope="session")
+def monkeypatch_session():
+    """Session-scoped monkeypatch."""
+    from _pytest.monkeypatch import MonkeyPatch
+
+    m = MonkeyPatch()
+    yield m
+    m.undo()
+
+
 @pytest.fixture(autouse=True, scope="session")
 def mock_env(monkeypatch_session):
     """Set up environment variables for testing."""
@@ -12,11 +22,11 @@ def mock_env(monkeypatch_session):
 
 
 @pytest.fixture(autouse=True, scope="session")
-def mock_torrent_apis(monkeypatch_session):
+def mock_torrent_apis():
     """Mock YGG and La Cale API responses for local testing."""
     with patch("requests.Session.request") as mock_request:
 
-        def side_effect(method, url, **kwargs):
+        def side_effect(method, url, *args, **kwargs):
             mock_response = requests.Response()
             mock_response.status_code = 200
             mock_response.headers = {"Content-Type": "application/json"}
@@ -59,13 +69,3 @@ def mock_torrent_apis(monkeypatch_session):
 
         mock_request.side_effect = side_effect
         yield mock_request
-
-
-@pytest.fixture(scope="session")
-def monkeypatch_session():
-    """Session-scoped monkeypatch."""
-    from _pytest.monkeypatch import MonkeyPatch
-
-    m = MonkeyPatch()
-    yield m
-    m.undo()

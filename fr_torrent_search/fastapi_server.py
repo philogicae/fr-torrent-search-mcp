@@ -15,7 +15,7 @@ app = FastAPI(
 
 
 client = FrTorrentApi()
-client._ensure_initialized()
+client.ensure_initialized()
 
 
 def cleanup_temp_dir(dir_path: str) -> None:
