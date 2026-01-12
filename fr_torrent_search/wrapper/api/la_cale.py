@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 from ..models import Torrent
 from ..utils import format_date, format_size, torrent_bytes_to_magnet
-from .base import BaseTorrentApi
+from .base import FOLDER_TORRENT_FILES, BaseTorrentApi
 
 load_dotenv()
 
@@ -101,7 +101,7 @@ class LaCaleApi(BaseTorrentApi):
         return None
 
     def download_torrent_file(
-        self, torrent_id: str, output_dir: str | Path = "."
+        self, torrent_id: str, output_dir: str | Path | None = None
     ) -> str | None:
         """
         Download the .torrent file.
@@ -116,7 +116,9 @@ class LaCaleApi(BaseTorrentApi):
             torrent_bytes = self.download_torrent_file_bytes(torrent_id)
             if torrent_bytes and isinstance(torrent_bytes, bytes):
                 filename = f"{torrent_id}.torrent"
-                with open(Path(output_dir) / filename, "wb") as f:
+                with open(
+                    str(Path(output_dir or FOLDER_TORRENT_FILES) / filename), "wb"
+                ) as f:
                     f.write(torrent_bytes)
                 return filename
         except Exception as e:

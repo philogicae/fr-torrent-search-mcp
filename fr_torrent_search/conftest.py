@@ -11,8 +11,8 @@ def mock_env(monkeypatch_session):
     monkeypatch_session.setenv("YGG_BASE_URL", "http://localhost:8715")
 
 
-@pytest.fixture(autouse=True)
-def mock_torrent_apis():
+@pytest.fixture(autouse=True, scope="session")
+def mock_torrent_apis(monkeypatch_session):
     """Mock YGG and La Cale API responses for local testing."""
     with patch("requests.Session.request") as mock_request:
 

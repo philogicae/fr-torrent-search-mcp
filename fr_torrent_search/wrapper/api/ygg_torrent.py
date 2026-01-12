@@ -31,11 +31,20 @@ class YggTorrentApi(BaseTorrentApi):
         """
         super().__init__(base_url)
         self.enabled = YGG_ENABLE
-        if not self.enabled:
-            return
-        if not self.status():
-            raise ValueError("YggTorrent API is not available.")
-        self.categories = self._fetch_categories()
+        self._categories = None
+
+    @property
+    def categories(self) -> dict[int, str]:
+        if self._categories is None:
+            if not self.enabled:
+                self._categories = {}
+            elif not self.status():
+                # We don't raise here anymore to avoid breaking initialization
+                logger.warning("YggTorrent API is not available during category fetch.")
+                self._categories = {}
+            else:
+                self._categories = self._fetch_categories()
+        return self._categories
 
     def _fetch_categories(self) -> dict[int, str]:
         """Get a list of categories."""
@@ -101,7 +110,7 @@ class YggTorrentApi(BaseTorrentApi):
         raise NotImplementedError()
 
     def download_torrent_file(
-        self, torrent_id: str, output_dir: str | Path = "."
+        self, torrent_id: str, output_dir: str | Path | None = None
     ) -> str | None:
         raise NotImplementedError()
 

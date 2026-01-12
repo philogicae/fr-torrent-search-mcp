@@ -24,9 +24,10 @@ class FrTorrentApi(BaseTorrentApi):
         self.apis: list[BaseTorrentApi] = []
         self.api_names: list[str] = []
         self._initialized = False
+        self._ensure_initialized()
 
     def _ensure_initialized(self) -> None:
-        """Lazy discovery of APIs to allow for late mocking/env setup."""
+        """Ensure that APIs are discovered and initialized."""
         if not self._initialized:
             self._discover_apis()
             self._initialized = True
@@ -108,7 +109,7 @@ class FrTorrentApi(BaseTorrentApi):
         return None
 
     def download_torrent_file(
-        self, torrent_id: str, output_dir: str | Path = "."
+        self, torrent_id: str, output_dir: str | Path | None = None
     ) -> str | None:
         self._ensure_initialized()
         api = self._get_api_for_id(torrent_id)

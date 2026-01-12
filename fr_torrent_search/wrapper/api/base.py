@@ -1,13 +1,20 @@
 import logging
 from abc import ABC, abstractmethod
+from os import getenv, makedirs
 from pathlib import Path
 from typing import Any
 
+from dotenv import load_dotenv
 from requests import Session, exceptions
 
 from ..models import Mode, Torrent
 
+load_dotenv()
+
 logger = logging.getLogger(__name__)
+
+FOLDER_TORRENT_FILES: Path = Path(getenv("FOLDER_TORRENT_FILES") or "./torrents")
+makedirs(FOLDER_TORRENT_FILES, exist_ok=True)
 
 
 class BaseTorrentApi(ABC):
@@ -124,7 +131,7 @@ class BaseTorrentApi(ABC):
 
     @abstractmethod
     def download_torrent_file(
-        self, torrent_id: str, output_dir: str | Path = "."
+        self, torrent_id: str, output_dir: str | Path | None = None
     ) -> str | None:
         """
         Download the .torrent file.

@@ -72,10 +72,7 @@ def get_magnet_link(torrent_id: str) -> str | None:
 
 
 @mcp.tool()
-def download_torrent_file(
-    torrent_id: str,
-    output_dir: str,
-) -> str | None:
+def download_torrent_file(torrent_id: str, output_dir: str | None = None) -> str | None:
     """Download the torrent file for a specific torrent by id."""
     logger.info(f"Downloading torrent file for torrent: {torrent_id}")
     return client.download_torrent_file(torrent_id, output_dir)

@@ -35,7 +35,7 @@ async def health_check() -> dict[str, str]:
 
 
 @app.post(
-    "/torrents/search",
+    "/torrent/search",
     summary="Search Torrents",
     tags=["Torrents"],
     response_model=list[Torrent],
@@ -52,7 +52,7 @@ async def search_torrents(
 
 
 @app.get(
-    "/torrents/{torrent_id}",
+    "/torrent/{torrent_id}",
     summary="Get Torrent",
     tags=["Torrents"],
 )
@@ -125,7 +125,7 @@ async def get_torrent(
 
 
 @app.get(
-    "/torrents/{torrent_id}/magnet",
+    "/torrent/{torrent_id}/magnet",
     summary="Get Magnet Link",
     tags=["Torrents"],
     response_model=str,
@@ -146,7 +146,7 @@ async def get_magnet_link(
 
 
 @app.get(
-    "/torrents/{torrent_id}/file",
+    "/torrent/{torrent_id}/file",
     summary="Download .torrent File",
     tags=["Torrents"],
     response_class=FileResponse,
