@@ -81,6 +81,9 @@ YGG_PASSWORD=
 #LA_CALE_TRACKER=https://tracker.la-cale.space/announce
 # Find your passkey on https://la-cale.space/profile
 LA_CALE_PASSKEY=
+
+# Target folder for torrent files (Default: ./torrents).
+#FOLDER_TORRENT_FILES=/path/to/target/folder
 ```
 
 ### Installation
@@ -102,8 +105,9 @@ pip install fr-torrent-search-mcp
 ```env
 YGG_USERNAME=your_ygg_username
 YGG_PASSWORD=your_ygg_password
-TURBO_ENABLED=true (optional)
+#TURBO_ENABLED=true
 LA_CALE_PASSKEY=your_la_cale_passkey
+#FOLDER_TORRENT_FILES=/path/to/target/folder
 ```
 
 3.  Run the MCP server (default: stdio):
@@ -180,7 +184,7 @@ docker logs fr-torrent-search-mcp -f
 ```python
 from fr_torrent_search import fr_torrent_api
 
-results = fr_torrent_api.search_torrents('...')
+results = fr_torrent_api.search_torrents('...', max_items=10)
 for torrent in results:
     print(f"{torrent.filename} | {torrent.size} | {torrent.seeders} SE | {torrent.leechers} LE | {torrent.downloads} DL | {torrent.date}")
 ```
@@ -203,7 +207,7 @@ This project also includes a FastAPI server as an alternative way to interact wi
 # With Python
 python -m fr_torrent_search --mode fastapi
 # With uv
-uv run -m fr-torrent-search-mcp --mode fastapi
+uv run -m fr_torrent_search --mode fastapi
 ```
 
 - `--host <host>`: Default: `0.0.0.0`.
@@ -216,9 +220,13 @@ The FastAPI server will then be accessible at `http://<host>:<port>`
 **Available Endpoints:**
 The FastAPI server exposes similar functionalities to the MCP server. Key endpoints include:
 
-- `/`: A simple health check endpoint. Returns `{"status": "ok"}`.
-- `/docs`: Interactive API documentation (Swagger UI).
-- `/redoc`: Alternative API documentation (ReDoc).
+- `GET /`: Health check endpoint. Returns `{"status": "ok"}`.
+- `POST /torrent/search`: Search for torrents (params: `query`, `max_items`).
+- `GET /torrent/{torrent_id}`: Get torrent (returns magnet link or .torrent file).
+- `GET /torrent/{torrent_id}/magnet`: Get magnet link for a torrent.
+- `GET /torrent/{torrent_id}/file`: Download .torrent file.
+- `GET /docs`: Interactive API documentation (Swagger UI).
+- `GET /redoc`: Alternative API documentation (ReDoc).
 
 Environment variables are configured the same way as for the MCP server.
 

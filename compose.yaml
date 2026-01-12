@@ -46,7 +46,7 @@ services:
     image: fr-torrent-search-mcp
     restart: unless-stopped
     ports:
-      - 8787:8000
+      - 8000:8000
     env_file:
       - .env
     volumes:
