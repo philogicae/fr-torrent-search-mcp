@@ -1,0 +1,1 @@
+uv lock && uv sync -U --link-mode=copy && uv run ruff format fr_torrent_search && uv run ruff check fr_torrent_search --fix && uv run ty check fr_torrent_search && uv run pytest fr_torrent_search

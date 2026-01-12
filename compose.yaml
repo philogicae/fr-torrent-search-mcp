@@ -1,0 +1,58 @@
+name: fr-torrent-search
+
+x-dns: &default-dns
+  dns:
+    - 9.9.9.9
+    - 149.112.112.112
+    - 2620:fe::fe
+    - 2620:fe::9
+
+x-logging: &default-logging
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+services:
+  ygg-api:
+    image: uwucode/ygege:develop
+    container_name: ygg-api
+    restart: unless-stopped
+    ports:
+      - 8715:8715
+    volumes:
+      - ygg-config:/config
+    environment:
+      LOG_LEVEL: debug
+      BIND_IP: 0.0.0.0
+      BIND_PORT: 8715
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8715/health || exit 1" ]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    <<: [ *default-dns, *default-logging ]
+    network_mode: bridge
+    deploy:
+      replicas: ${YGG_ENABLE:-1}
+
+  fr-torrent-search-mcp:
+    container_name: fr-torrent-search-mcp
+    build: .
+    image: fr-torrent-search-mcp
+    restart: unless-stopped
+    ports:
+      - 8787:8000
+    env_file:
+      - .env
+    <<: [ *default-dns, *default-logging ]
+    network_mode: bridge
+    deploy:
+      replicas: 0
+
+volumes:
+  ygg-config:
