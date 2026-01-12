@@ -51,8 +51,6 @@ services:
       - .env
     <<: [ *default-dns, *default-logging ]
     network_mode: bridge
-    deploy:
-      replicas: 0
 
 volumes:
   ygg-config:
