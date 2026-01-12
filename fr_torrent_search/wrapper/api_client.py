@@ -23,7 +23,13 @@ class FrTorrentApi(BaseTorrentApi):
         super().__init__("http://aggregator")
         self.apis: list[BaseTorrentApi] = []
         self.api_names: list[str] = []
-        self._discover_apis()
+        self._initialized = False
+
+    def _ensure_initialized(self) -> None:
+        """Lazy discovery of APIs to allow for late mocking/env setup."""
+        if not self._initialized:
+            self._discover_apis()
+            self._initialized = True
 
     def _discover_apis(self) -> None:
         """Dynamically discover and instantiate all BaseTorrentApi subclasses in the api/ directory."""
@@ -65,6 +71,7 @@ class FrTorrentApi(BaseTorrentApi):
         """
         Search for torrents across all discovered APIs in parallel.
         """
+        self._ensure_initialized()
         all_results: list[Torrent] = []
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.apis)
@@ -94,6 +101,7 @@ class FrTorrentApi(BaseTorrentApi):
         return None
 
     def download_torrent_file_bytes(self, torrent_id: str) -> bytes | None:
+        self._ensure_initialized()
         api = self._get_api_for_id(torrent_id)
         if api:
             return api.download_torrent_file_bytes(torrent_id)
@@ -102,12 +110,14 @@ class FrTorrentApi(BaseTorrentApi):
     def download_torrent_file(
         self, torrent_id: str, output_dir: str | Path = "."
     ) -> str | None:
+        self._ensure_initialized()
         api = self._get_api_for_id(torrent_id)
         if api:
             return api.download_torrent_file(torrent_id, output_dir)
         return None
 
     def get_magnet_link(self, torrent_id: str) -> str | None:
+        self._ensure_initialized()
         api = self._get_api_for_id(torrent_id)
         if api:
             return api.get_magnet_link(torrent_id)
@@ -117,6 +127,7 @@ class FrTorrentApi(BaseTorrentApi):
         """
         Get a specific torrent by delegating to the appropriate API.
         """
+        self._ensure_initialized()
         api = self._get_api_for_id(torrent_id)
         if api:
             return api.get_torrent(torrent_id, **kwargs)
@@ -124,6 +135,7 @@ class FrTorrentApi(BaseTorrentApi):
 
     def status(self) -> dict[str, Any] | None:
         """Check status of all APIs."""
+        self._ensure_initialized()
         statuses = {}
         for api in self.apis:
             try:

@@ -28,7 +28,7 @@ def mock_torrent_apis():
                 elif url.endswith("/categories"):
                     mock_response._content = b'[{"id": 1, "name": "Film", "sub_categories": [{"id": 2, "name": "Animation"}]}, {"id": 3, "name": "S\xc3\xa9rie"}]'
                 elif "/search" in url:
-                    mock_response._content = b'[{"id": "1268760", "name": "Berserk Ygg Mock", "category_id": 2, "size": 524288000, "seed": 100, "leech": 10, "completed": 50, "age_stamp": 1700000000}]'
+                    mock_response._content = b'[{"id": "fake_id", "name": "Berserk Ygg Mock", "category_id": 2, "size": 524288000, "seed": 100, "leech": 10, "completed": 50, "age_stamp": 1700000000}]'
                 elif "/torrent/" in url:
                     # Return magnet link for YGG via 302 redirect
                     mock_response.status_code = 302
@@ -43,7 +43,7 @@ def mock_torrent_apis():
             # La Cale API (la-cale.space)
             if "la-cale.space" in url:
                 if "/api/external" in url:
-                    mock_response._content = b'[{"infoHash": "81d31b94f868658ea44d3ef6bfd28de2ec9ea63c", "title": "Berserk La Cale Mock", "category": "Animation", "size": 629145600, "seeders": 150, "leechers": 20, "pubDate": "2023-11-15T12:00:00Z"}]'
+                    mock_response._content = b'[{"infoHash": "fake_id", "title": "Berserk La Cale Mock", "category": "Animation", "size": 629145600, "seeders": 150, "leechers": 20, "pubDate": "2023-11-15T12:00:00Z"}]'
                 elif "/api/torrents/download/" in url:
                     mock_response.headers = {"Content-Type": "application/x-bittorrent"}
                     mock_response._content = (

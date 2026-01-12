@@ -28,7 +28,7 @@ async def test_search_torrents(mcp_client: Client[Any]) -> None:
 async def test_get_torrent(mcp_client: Client[Any]) -> None:
     """Test the 'get_torrent' tool."""
     async with mcp_client as client:
-        result = await client.call_tool("get_torrent", {"torrent_id": "y_1268760"})
+        result = await client.call_tool("get_torrent", {"torrent_id": "y_fake_id"})
         assert result is not None and len(result.content[0].text) > 32
 
 
@@ -36,7 +36,7 @@ async def test_get_torrent(mcp_client: Client[Any]) -> None:
 async def test_get_magnet_link(mcp_client: Client[Any]) -> None:
     """Test the 'get_magnet_link' tool."""
     async with mcp_client as client:
-        result = await client.call_tool("get_magnet_link", {"torrent_id": "y_1268760"})
+        result = await client.call_tool("get_magnet_link", {"torrent_id": "y_fake_id"})
         assert result is not None and len(result.content[0].text) > 32
 
 
@@ -48,11 +48,11 @@ async def test_download_torrent_file(mcp_client: Client[Any]) -> None:
         result = await client.call_tool(
             "download_torrent_file",
             {
-                "torrent_id": "c_81d31b94f868658ea44d3ef6bfd28de2ec9ea63c",
+                "torrent_id": "c_fake_id",
                 "output_dir": curr_dir,
             },
         )
-        assert result is not None and len(result.content[0].text) > 32
+        assert result is not None and len(result.content[0].text) > 10
         file_path = os.path.join(curr_dir, result.content[0].text)
         if os.path.exists(file_path):
             os.remove(file_path)
