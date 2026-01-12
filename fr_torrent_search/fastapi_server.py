@@ -42,7 +42,7 @@ async def health_check() -> dict[str, str]:
 )
 async def search_torrents(
     query: str,
-    max_items: int = 20,
+    max_items: int = 10,
 ) -> list[Torrent]:
     """
     Search for torrents across multiple providers.
