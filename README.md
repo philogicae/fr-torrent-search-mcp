@@ -15,7 +15,9 @@ This repository provides a Python wrapper for the FR Torrent websites and an MCP
 
 ## Quickstart
 
-> [How to use it with MCP Clients](#via-mcp-clients) > [Run it with Docker to bypass common DNS issues](#for-docker)
+> [How to use it with MCP Clients](#via-mcp-clients)
+
+> [Run it with Docker to bypass common DNS issues](#for-docker)
 
 ## Table of Contents
 
@@ -40,8 +42,8 @@ This repository provides a Python wrapper for the FR Torrent websites and an MCP
 ## Features
 
 - API aggregator for multiple French torrent providers:
-  - **LaCale**: Native support.
-  - **YggTorrent**: Support via local bridge (e.g., YggAPI).
+  - **YggTorrent**: Support via local bridge [UwUDev/ygege](https://github.com/UwUDev/ygege), check [compose.yaml](./compose.yaml).
+  - **La Cale**: Native support.
 - MCP server interface for standardized communication (stdio, sse, streamable-http)
 - FastAPI server interface for alternative HTTP access (e.g., for direct API calls or testing)
 - Tools:
@@ -70,7 +72,7 @@ The application requires configuration for the supported providers.
 # YGGTorrent Configuration
 #YGG_ENABLE=0
 #YGG_DOMAIN=www.yggtorrent.org
-#YGG_BASE_URL=http://localhost:8715
+#YGG_LOCAL_API=http://localhost:8715  # Local Ygg API
 YGG_USERNAME=
 YGG_PASSWORD=
 #TURBO_ENABLED=true
@@ -78,7 +80,6 @@ YGG_PASSWORD=
 # LaCale Configuration
 #LA_CALE_ENABLE=0
 #LA_CALE_DOMAIN=la-cale.space
-#LA_CALE_TRACKER=https://tracker.la-cale.space/announce
 # Find your passkey on https://la-cale.space/profile
 LA_CALE_PASSKEY=
 
@@ -150,7 +151,7 @@ uv run -m fr_torrent_search
 
 This method uses Docker to run the server in a container.
 
-compose.yaml is configured to bypass DNS issues (using [quad9](https://quad9.net/) DNS).
+[compose.yaml](./compose.yaml) is configured to bypass DNS issues (using [quad9](https://quad9.net/) DNS) and run a local Ygg API (Required for YggTorrent support).
 
 1.  Clone the repository (if you haven't already):
 

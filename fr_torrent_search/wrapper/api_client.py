@@ -4,7 +4,6 @@ import inspect
 import logging
 import pkgutil
 from pathlib import Path
-from sys import argv
 from typing import Any
 
 from .api.base import BaseTorrentApi
@@ -67,18 +66,35 @@ class FrTorrentApi(BaseTorrentApi):
         # This is not used by the aggregator directly as it delegates to sub-apis
         raise NotImplementedError("Aggregator does not format torrents directly")
 
-    def search_torrents(self, query: str, max_items: int = 10) -> list[Torrent]:
+    def search_torrents(
+        self, query: str, max_items: int = 10, exclude: list[str] | None = None
+    ) -> list[Torrent]:
         """
         Search for torrents across all discovered APIs in parallel.
+
+        Args:
+            query: Search query string
+            max_items: Maximum number of results to return
+            exclude: List of API names to exclude from search
         """
         self.ensure_initialized()
         all_results: list[Torrent] = []
+
+        # Filter APIs based on exclude list
+        apis_to_use = self.apis
+        if exclude:
+            apis_to_use = [api for api in self.apis if api.name not in exclude]
+
+        # If no APIs available after filtering, return empty list
+        if not apis_to_use:
+            return []
+
         with concurrent.futures.ThreadPoolExecutor(
-            max_workers=len(self.apis)
+            max_workers=len(apis_to_use)
         ) as executor:
             future_to_api = {
                 executor.submit(api.search_torrents, query, max_items): api
-                for api in self.apis
+                for api in apis_to_use
             }
             for future in concurrent.futures.as_completed(future_to_api):
                 api = future_to_api[future]
@@ -146,23 +162,4 @@ class FrTorrentApi(BaseTorrentApi):
 
 
 if __name__ == "__main__":
-    # Configure logging for direct execution
-    logging.basicConfig(level=logging.INFO, format="%(levelname)s:%(name)s:%(message)s")
-    QUERY = argv[1] if len(argv) > 1 else 0
-    if not QUERY:
-        print("Please provide a search query.")
-        exit(1)
-    client = FrTorrentApi()
-    print(f"Status: {client.status()}")
-    found_torrents: list[Torrent] = client.search_torrents(str(QUERY), 3)
-    if found_torrents:
-        print(f"Found {len(found_torrents)} torrents:")
-        for t in found_torrents:
-            print(f"- {t.filename} ({t.id})")
-
-        first_id = found_torrents[0].id
-        print(f"\nFetching first torrent: {first_id}")
-        result = client.get_torrent(first_id)
-        print(f"Result: {result}")
-    else:
-        print("No torrents found")
+    FrTorrentApi().cli()

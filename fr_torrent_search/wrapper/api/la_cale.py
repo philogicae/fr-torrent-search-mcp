@@ -1,40 +1,36 @@
 import logging
-from os import getenv
-from pathlib import Path
-from sys import argv
 from typing import Any
 
-from dotenv import load_dotenv
-
 from ..models import Torrent
-from ..utils import format_date, format_size, torrent_bytes_to_magnet
-from .base import FOLDER_TORRENT_FILES, BaseTorrentApi
-
-load_dotenv()
+from ..utils import (
+    format_date,
+    format_size,
+    get_env,
+    get_env_bool,
+    torrent_bytes_to_magnet,
+)
+from .base import BaseTorrentApi
 
 logger = logging.getLogger(__name__)
-
-LA_CALE_DOMAIN = getenv("LA_CALE_DOMAIN") or "https://la-cale.space"
-LA_CALE_TRACKER = getenv("LA_CALE_TRACKER") or "https://tracker.la-cale.space/announce"
-LA_CALE_ENABLE = getenv("LA_CALE_ENABLE", "1") not in ("0", "false", "False")
 
 
 class LaCaleApi(BaseTorrentApi):
     """A client for interacting with the LaCale API."""
 
     name: str = "LaCale"
-    id_prefix: str = "c_"
+    id_prefix: str = "lc_"
 
-    def __init__(self, base_url: str = LA_CALE_DOMAIN) -> None:
+    def __init__(self, base_url: str | None = None) -> None:
         """
         Initializes the API client.
         """
-        super().__init__(base_url)
-        self.enabled = LA_CALE_ENABLE
-        self.passkey = getenv("LA_CALE_PASSKEY")
+        super().__init__(
+            base_url or str(get_env("LA_CALE_DOMAIN", "https://la-cale.space"))
+        )
+        self.passkey = get_env("LA_CALE_PASSKEY")
+        self.enabled = bool(self.passkey) and get_env_bool("LA_CALE_ENABLE")
         if not self.passkey:
             raise ValueError("LA_CALE_PASSKEY not found in .env file.")
-        self.tracker = f"{LA_CALE_TRACKER}?passkey={self.passkey}"
 
     def _format_torrent(self, torrent: dict[str, Any]) -> Torrent:
         """Converts a torrent data dictionary from the API into a Torrent model instance."""
@@ -89,7 +85,7 @@ class LaCaleApi(BaseTorrentApi):
             torrent_id: The ID of the torrent.
 
         Returns:
-            The .torrent file content as bytes or an error dictionary.
+            The .torrent file content as bytes or None.
         """
         torrent_bytes = self._request(
             "GET",
@@ -98,31 +94,6 @@ class LaCaleApi(BaseTorrentApi):
         )
         if torrent_bytes:
             return torrent_bytes
-        return None
-
-    def download_torrent_file(
-        self, torrent_id: str, output_dir: str | Path | None = None
-    ) -> str | None:
-        """
-        Download the .torrent file.
-
-        Args:
-            torrent_id: The ID of the torrent.
-
-        Returns:
-            The filename of the downloaded .torrent file or None.
-        """
-        try:
-            torrent_bytes = self.download_torrent_file_bytes(torrent_id)
-            if torrent_bytes and isinstance(torrent_bytes, bytes):
-                filename = f"{torrent_id}.torrent"
-                with open(
-                    str(Path(output_dir or FOLDER_TORRENT_FILES) / filename), "wb"
-                ) as f:
-                    f.write(torrent_bytes)
-                return filename
-        except Exception as e:
-            logger.error(f"Error downloading torrent file for {torrent_id}: {e}")
         return None
 
     def get_magnet_link(self, torrent_id: str) -> str | None:
@@ -138,7 +109,7 @@ class LaCaleApi(BaseTorrentApi):
         try:
             torrent_bytes = self.download_torrent_file_bytes(torrent_id)
             if torrent_bytes and isinstance(torrent_bytes, bytes):
-                return torrent_bytes_to_magnet(torrent_bytes, self.tracker)
+                return torrent_bytes_to_magnet(torrent_bytes)
         except Exception as e:
             logger.error(f"Failed to get magnet link for {torrent_id}: {e}")
         return None
@@ -162,14 +133,4 @@ class LaCaleApi(BaseTorrentApi):
 
 
 if __name__ == "__main__":
-    QUERY = argv[1] if len(argv) > 1 else 0
-    if not QUERY:
-        print("Please provide a search query.")
-        exit(1)
-    client = LaCaleApi()
-    found_torrents: list[Torrent] = client.search_torrents(str(QUERY), 3)
-    if found_torrents:
-        print(found_torrents)
-        print(client.get_torrent(found_torrents[0].id))
-    else:
-        print("No torrents found")
+    LaCaleApi().cli()

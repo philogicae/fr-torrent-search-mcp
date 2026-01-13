@@ -3,7 +3,7 @@ from typing import Any
 
 from fastmcp import FastMCP
 
-from .wrapper import FrTorrentApi, Torrent
+from .wrapper import FrTorrentApi
 
 logger = logging.getLogger(__name__)
 mcp: FastMCP[Any] = FastMCP("Fr Torrent Search")
@@ -50,7 +50,7 @@ def search_torrents(
     logger.info(
         f"Searching for torrents: {query} (intent: {user_intent}), max_items: {max_items}"
     )
-    torrents: list[Torrent] = client.search_torrents(query, max_items)
+    torrents = client.search_torrents(query, max_items)
     return "\n".join([str(torrent) for torrent in torrents])
 
 
@@ -68,7 +68,7 @@ def get_torrent(torrent_id: str) -> str:
 def get_magnet_link(torrent_id: str) -> str:
     """Get the magnet link for a specific torrent by id."""
     logger.info(f"Getting magnet link for torrent: {torrent_id}")
-    magnet_link: str | None = client.get_magnet_link(torrent_id)
+    magnet_link = client.get_magnet_link(torrent_id)
     return magnet_link or "Magnet link not found"
 
 

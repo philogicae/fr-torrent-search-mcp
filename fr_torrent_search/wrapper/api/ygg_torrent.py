@@ -1,36 +1,33 @@
 import logging
-from os import getenv
-from pathlib import Path
-from sys import argv
 from typing import Any
 
-from dotenv import load_dotenv
-
-from ..models import Mode, Torrent
-from ..utils import format_date, format_size
+from ..models import Torrent
+from ..utils import (
+    format_date,
+    format_size,
+    get_env,
+    get_env_bool,
+    torrent_bytes_to_magnet,
+)
 from .base import BaseTorrentApi
 
-load_dotenv()
-
 logger = logging.getLogger(__name__)
-
-YGG_BASE_URL = getenv("YGG_BASE_URL") or "http://localhost:8715"
-YGG_ENABLE = getenv("YGG_ENABLE", "1") not in ("0", "false", "False")
 
 
 class YggTorrentApi(BaseTorrentApi):
     """A client for interacting with the YggTorrent API."""
 
     name: str = "YggTorrent"
-    order: list[Mode] = [Mode.MAGNET]
-    id_prefix: str = "y_"
+    id_prefix: str = "yt_"
 
-    def __init__(self, base_url: str = YGG_BASE_URL) -> None:
+    def __init__(self, base_url: str | None = None) -> None:
         """
         Initializes the API client.
         """
-        super().__init__(base_url)
-        self.enabled = YGG_ENABLE
+        super().__init__(
+            base_url or str(get_env("YGG_LOCAL_API", "http://localhost:8715"))
+        )
+        self.enabled = get_env_bool("YGG_ENABLE")
         self._categories = None
 
     @property
@@ -107,12 +104,22 @@ class YggTorrentApi(BaseTorrentApi):
         return []
 
     def download_torrent_file_bytes(self, torrent_id: str) -> bytes | None:
-        raise NotImplementedError()
+        """
+        Download the .torrent file.
+        Corresponds to GET /torrent/<id>
 
-    def download_torrent_file(
-        self, torrent_id: str, output_dir: str | Path | None = None
-    ) -> str | None:
-        raise NotImplementedError()
+        Args:
+            torrent_id: The ID of the torrent.
+
+        Returns:
+            The .torrent file content as bytes or None.
+        """
+        torrent_bytes = self._request(
+            "GET", f"torrent/{torrent_id[len(self.id_prefix) :]}"
+        )
+        if torrent_bytes:
+            return torrent_bytes
+        return None
 
     def get_magnet_link(self, torrent_id: str) -> str | None:
         """
@@ -125,11 +132,9 @@ class YggTorrentApi(BaseTorrentApi):
             The magnet link as a string or None.
         """
         try:
-            magnet_link = self._request(
-                "GET", f"torrent/{torrent_id[len(self.id_prefix) :]}"
-            )
-            if magnet_link:
-                return magnet_link
+            torrent_bytes = self.download_torrent_file_bytes(torrent_id)
+            if torrent_bytes and isinstance(torrent_bytes, bytes):
+                return torrent_bytes_to_magnet(torrent_bytes)
         except Exception as e:
             logger.error(f"Failed to get magnet link for {torrent_id}: {e}")
         return None
@@ -152,14 +157,4 @@ class YggTorrentApi(BaseTorrentApi):
 
 
 if __name__ == "__main__":
-    QUERY = argv[1] if len(argv) > 1 else 0
-    if not QUERY:
-        print("Please provide a search query.")
-        exit(1)
-    client = YggTorrentApi()
-    found_torrents: list[Torrent] = client.search_torrents(str(QUERY), 3)
-    if found_torrents:
-        print(found_torrents)
-        print(client.get_torrent(found_torrents[0].id))
-    else:
-        print("No torrents found")
+    YggTorrentApi().cli()

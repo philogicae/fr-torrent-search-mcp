@@ -1,29 +1,24 @@
 import logging
 from abc import ABC, abstractmethod
-from os import getenv, makedirs
 from pathlib import Path
+from sys import argv
 from typing import Any
 
-from dotenv import load_dotenv
 from requests import Session, exceptions
 
 from ..models import Mode, Torrent
-
-load_dotenv()
+from ..utils import ensure_folder, get_folder_torrent_files
 
 logger = logging.getLogger(__name__)
-
-FOLDER_TORRENT_FILES: Path = Path(getenv("FOLDER_TORRENT_FILES") or "./torrents")
-makedirs(FOLDER_TORRENT_FILES, exist_ok=True)
 
 
 class BaseTorrentApi(ABC):
     """An abstract base class for interacting with a torrent API."""
 
-    name: str = "PLACEHOLDER"
-    order: list[Mode] = [Mode.FILE, Mode.MAGNET, Mode.BYTES]
+    name: str = ""
     id_prefix: str = ""
     enabled: bool = True
+    order: list[Mode] = [Mode.FILE, Mode.MAGNET, Mode.BYTES]
 
     def __init__(self, base_url: str) -> None:
         """
@@ -119,17 +114,15 @@ class BaseTorrentApi(ABC):
     def download_torrent_file_bytes(self, torrent_id: str) -> bytes | None:
         """
         Download the .torrent file.
-        Corresponds to GET /...
 
         Args:
             torrent_id: The ID of the torrent.
 
         Returns:
-            The .torrent file content as bytes or an error dictionary.
+            The .torrent file content as bytes or None.
         """
         raise NotImplementedError()
 
-    @abstractmethod
     def download_torrent_file(
         self, torrent_id: str, output_dir: str | Path | None = None
     ) -> str | None:
@@ -138,11 +131,29 @@ class BaseTorrentApi(ABC):
 
         Args:
             torrent_id: The ID of the torrent.
+            output_dir: The directory to save the .torrent file.
 
         Returns:
             The filename of the downloaded .torrent file or None.
         """
-        raise NotImplementedError()
+        try:
+            torrent_bytes = self.download_torrent_file_bytes(torrent_id)
+            if torrent_bytes and isinstance(torrent_bytes, bytes):
+                filename = f"{torrent_id}.torrent"
+                with open(
+                    str(
+                        Path(ensure_folder(output_dir) or get_folder_torrent_files())
+                        / filename
+                    ),
+                    "wb",
+                ) as f:
+                    f.write(torrent_bytes)
+                return filename
+        except NotImplementedError:
+            pass
+        except Exception as e:
+            logger.error(f"Error downloading torrent file for {torrent_id}: {e}")
+        return None
 
     @abstractmethod
     def get_magnet_link(self, torrent_id: str) -> str | None:
@@ -161,7 +172,6 @@ class BaseTorrentApi(ABC):
     def status(self) -> dict[str, Any] | None:
         """
         Get the status of the API.
-        Corresponds to GET /...
 
         Returns:
             The status as a dictionary or None.
@@ -213,3 +223,24 @@ class BaseTorrentApi(ABC):
             if result:
                 return result
         return None
+
+    def cli(self):
+        """
+        Command line interface for the API.
+        """
+        query = argv[1] if len(argv) > 1 else None
+        if query:
+            print(f"Status: {self.status()}")
+            found_torrents: list[Torrent] = self.search_torrents(query, max_items=5)
+            if found_torrents:
+                print(f"Found {len(found_torrents)} torrents:")
+                for t in found_torrents:
+                    print(f"{t.id} - {t.filename}")
+                print(f"Fetching: {found_torrents[0].id}")
+                print(
+                    f"Result: {self.get_torrent_as(found_torrents[0].id, Mode.MAGNET)}"
+                )
+            else:
+                print("No torrents found")
+        else:
+            print("Please provide a search query.")
