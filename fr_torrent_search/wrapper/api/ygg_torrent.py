@@ -2,13 +2,7 @@ import logging
 from typing import Any
 
 from ..models import Torrent
-from ..utils import (
-    format_date,
-    format_size,
-    get_env,
-    get_env_bool,
-    torrent_bytes_to_magnet,
-)
+from ..utils import format_date, format_size, get_env, get_env_bool
 from .base import BaseTorrentApi
 
 logger = logging.getLogger(__name__)
@@ -45,6 +39,9 @@ class YggTorrentApi(BaseTorrentApi):
 
     def _fetch_categories(self) -> dict[int, str]:
         """Get a list of categories."""
+        if not self._ensure_auth():
+            logger.warning("Failed to authenticate to YggTorrent API.")
+            return {}
         raw_categories = self._request("GET", "categories")
         if not raw_categories:
             return {}
@@ -66,6 +63,29 @@ class YggTorrentApi(BaseTorrentApi):
 
         process_categories(raw_categories)
         return formatted_categories
+
+    def get_user(self) -> dict[str, Any]:
+        """
+        Get the user information.
+        Corresponds to GET /user.
+
+        Returns:
+            The user as a dictionary.
+        """
+        user = self._request("GET", "user")
+        if user:
+            return user
+        return {"status": "KO"}
+
+    def _ensure_auth(self) -> bool:
+        """
+        Ensure authentication.
+        Calls get_user() that re-authenticate automatically if needed.
+
+        Returns:
+            True if the user is authenticated, False otherwise.
+        """
+        return self.get_user().get("username") is not None
 
     def _format_torrent(self, torrent: dict[str, Any]) -> Torrent:
         """Converts a torrent data dictionary from the API into a Torrent model instance."""
@@ -95,7 +115,9 @@ class YggTorrentApi(BaseTorrentApi):
         """
         if not self.enabled:
             return []
-
+        if not self._ensure_auth():
+            logger.warning("Failed to authenticate to YggTorrent API.")
+            return []
         torrents = self._request(
             "GET", "search", params={"q": query, "sort": "seed", "order": "descending"}
         )
@@ -114,6 +136,9 @@ class YggTorrentApi(BaseTorrentApi):
         Returns:
             The .torrent file content as bytes or None.
         """
+        if not self._ensure_auth():
+            logger.warning("Failed to authenticate to YggTorrent API.")
+            return None
         torrent_bytes = self._request(
             "GET", f"torrent/{torrent_id[len(self.id_prefix) :]}"
         )
@@ -121,39 +146,21 @@ class YggTorrentApi(BaseTorrentApi):
             return torrent_bytes
         return None
 
-    def get_magnet_link(self, torrent_id: str) -> str | None:
-        """
-        Get the magnet link for a specific torrent.
-
-        Args:
-            torrent_id: The ID of the torrent.
-
-        Returns:
-            The magnet link as a string or None.
-        """
-        try:
-            torrent_bytes = self.download_torrent_file_bytes(torrent_id)
-            if torrent_bytes and isinstance(torrent_bytes, bytes):
-                return torrent_bytes_to_magnet(torrent_bytes)
-        except Exception as e:
-            logger.error(f"Failed to get magnet link for {torrent_id}: {e}")
-        return None
-
-    def status(self) -> dict[str, Any] | None:
+    def status(self) -> dict[str, Any]:
         """
         Get the status of the API.
         Corresponds to GET /status
 
         Returns:
-            The status as a dictionary or None.
+            The status as a dictionary.
         """
-        try:
+        if not self._ensure_auth():
+            logger.warning("Failed to authenticate to YggTorrent API.")
+        else:
             status = self._request("GET", "status")
             if status:
                 return status
-        except Exception as e:
-            logger.error(f"Failed to get status: {e}")
-        return None
+        return {"status": "KO"}
 
 
 if __name__ == "__main__":

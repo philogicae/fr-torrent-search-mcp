@@ -2,13 +2,7 @@ import logging
 from typing import Any
 
 from ..models import Torrent
-from ..utils import (
-    format_date,
-    format_size,
-    get_env,
-    get_env_bool,
-    torrent_bytes_to_magnet,
-)
+from ..utils import format_date, format_size, get_env, get_env_bool
 from .base import BaseTorrentApi
 
 logger = logging.getLogger(__name__)
@@ -96,31 +90,13 @@ class LaCaleApi(BaseTorrentApi):
             return torrent_bytes
         return None
 
-    def get_magnet_link(self, torrent_id: str) -> str | None:
-        """
-        Get the magnet link for a specific torrent.
-
-        Args:
-            torrent_id: The ID of the torrent.
-
-        Returns:
-            The magnet link as a string or None.
-        """
-        try:
-            torrent_bytes = self.download_torrent_file_bytes(torrent_id)
-            if torrent_bytes and isinstance(torrent_bytes, bytes):
-                return torrent_bytes_to_magnet(torrent_bytes)
-        except Exception as e:
-            logger.error(f"Failed to get magnet link for {torrent_id}: {e}")
-        return None
-
-    def status(self) -> dict[str, Any] | None:
+    def status(self) -> dict[str, Any]:
         """
         Get the status of the API.
         Corresponds to a dummy GET /api/external
 
         Returns:
-            The status as a dictionary or None.
+            The status as a dictionary.
         """
         torrents = self._request(
             "GET",
@@ -128,8 +104,8 @@ class LaCaleApi(BaseTorrentApi):
             params={"passkey": self.passkey},
         )
         if torrents:
-            return {"status": "ok"}
-        return None
+            return {"status": "OK"}
+        return {"status": "KO"}
 
 
 if __name__ == "__main__":

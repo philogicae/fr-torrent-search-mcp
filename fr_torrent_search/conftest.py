@@ -1,23 +1,23 @@
+# pylint: disable=protected-access
 from os import getcwd
 from unittest.mock import patch
 
 import pytest
 import requests
+from _pytest.monkeypatch import MonkeyPatch
 from bencodepy import encode
 
 
 @pytest.fixture(scope="session")
 def monkeypatch_session():
     """Session-scoped monkeypatch."""
-    from _pytest.monkeypatch import MonkeyPatch
-
     m = MonkeyPatch()
     yield m
     m.undo()
 
 
 @pytest.fixture(autouse=True, scope="session")
-def mock_env(monkeypatch_session):
+def mock_env(monkeypatch_session):  # pylint: disable=redefined-outer-name
     """Set up environment variables for testing."""
     monkeypatch_session.setenv("FOLDER_TORRENT_FILES", getcwd())
     monkeypatch_session.setenv("YGG_LOCAL_API", "http://localhost:8715")
@@ -29,7 +29,7 @@ def mock_torrent_apis():
     """Mock YGG and La Cale API responses for local testing."""
     with patch("requests.Session.request") as mock_request:
 
-        def side_effect(method, url, *args, **kwargs):
+        def side_effect(method, url, *args, **kwargs):  # pylint: disable=unused-argument
             mock_response = requests.Response()
             mock_response.status_code = 200
             mock_response.headers = {"Content-Type": "application/json"}
@@ -51,6 +51,8 @@ def mock_torrent_apis():
             if ":8715" in url:
                 if url.endswith("/status"):
                     mock_response._content = b'{"status": "ok"}'
+                elif url.endswith("/user"):
+                    mock_response._content = b'{"username": "test"}'
                 elif url.endswith("/categories"):
                     mock_response._content = b'[{"id": 1, "name": "Film", "sub_categories": [{"id": 2, "name": "Animation"}]}, {"id": 3, "name": "S\xc3\xa9rie"}]'
                 elif "/search" in url:

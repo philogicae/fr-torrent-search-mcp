@@ -7,7 +7,7 @@ from typing import Any
 from requests import Session, exceptions
 
 from ..models import Mode, Torrent
-from ..utils import ensure_folder, get_folder_torrent_files
+from ..utils import ensure_folder, get_folder_torrent_files, torrent_bytes_to_magnet
 
 logger = logging.getLogger(__name__)
 
@@ -87,10 +87,11 @@ class BaseTorrentApi(ABC):
                 return response.json()
             elif response.content:
                 return response.content
-            return None
         except exceptions.RequestException as e:
             logger.error(f"Request to {url} failed: {e}")
-            return None
+        except Exception as e:
+            logger.error(f"Exception on {url}: {e}")
+        return None
 
     @abstractmethod
     def _format_torrent(self, torrent: dict[str, Any]) -> Torrent:
@@ -150,12 +151,11 @@ class BaseTorrentApi(ABC):
                     f.write(torrent_bytes)
                 return filename
         except NotImplementedError:
-            pass
+            logger.error(f"Not implemented for {self.name}")
         except Exception as e:
             logger.error(f"Error downloading torrent file for {torrent_id}: {e}")
         return None
 
-    @abstractmethod
     def get_magnet_link(self, torrent_id: str) -> str | None:
         """
         Get the magnet link for a specific torrent.
@@ -166,15 +166,20 @@ class BaseTorrentApi(ABC):
         Returns:
             The magnet link as a string or None.
         """
-        raise NotImplementedError()
+        try:
+            torrent_bytes = self.download_torrent_file_bytes(torrent_id)
+            if torrent_bytes and isinstance(torrent_bytes, bytes):
+                return torrent_bytes_to_magnet(torrent_bytes)
+        except Exception as e:
+            logger.error(f"Failed to get magnet link for {torrent_id}: {e}")
+        return None
 
-    @abstractmethod
-    def status(self) -> dict[str, Any] | None:
+    def status(self) -> dict[str, Any]:
         """
         Get the status of the API.
 
         Returns:
-            The status as a dictionary or None.
+            The status as a dictionary.
         """
         raise NotImplementedError()
 
@@ -229,16 +234,22 @@ class BaseTorrentApi(ABC):
         Command line interface for the API.
         """
         query = argv[1] if len(argv) > 1 else None
+        print(f"Status: {self.status()}")
         if query:
-            print(f"Status: {self.status()}")
-            found_torrents: list[Torrent] = self.search_torrents(query, max_items=5)
+            found_torrents: list[Torrent] = self.search_torrents(query, max_items=100)
             if found_torrents:
-                print(f"Found {len(found_torrents)} torrents:")
+                found_sources = set()
                 for t in found_torrents:
-                    print(f"{t.id} - {t.filename}")
+                    found_sources.add(t.source)
+                    print(
+                        f"{t.id} ({t.seeders}|{t.leechers}|{t.downloads}) - {t.filename}"
+                    )
                 print(f"Fetching: {found_torrents[0].id}")
                 print(
                     f"Result: {self.get_torrent_as(found_torrents[0].id, Mode.MAGNET)}"
+                )
+                print(
+                    f"Found Sources: {found_sources} | Found Torrents: {len(found_torrents)}"
                 )
             else:
                 print("No torrents found")
