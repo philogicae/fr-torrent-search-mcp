@@ -1,3 +1,16 @@
+## [1.0.7] - 2026-01-18
+
+### 💼 Changes
+
+- Update CHANGELOG version from 1.0.5 to 1.0.6
+- Fix typo in search_torrents docstring and improve query handling
+
+- Fix typo "Perfom" to "Perform" in search_torrents MCP tool docstring
+- Update query construction rules to allow technical tags when explicitly requested
+- Simplify user_intent example and improve quality preference guidelines
+- Change quality preference from "x265" to "h265" for consistency
+- Remove preference against 4k quality in favor of 1080p or 4k over 720p
+- Ensure query is lowercased in FrTorrentApi.search_torrents()
 ## [1.0.6] - 2026-01-15
 
 ### 💼 Changes
@@ -13,12 +26,11 @@
 - Fix topo_order_commits comment from "releases" to "commits"
 - Add authentication checks and improve error handling across API implementations
 
-- Add \_ensure_auth() method to YggTorrentApi to verify authentication before requests
+- Add _ensure_auth() method to YggTorrentApi to verify authentication before requests
 - Add get_user() endpoint to YggTorrentApi for authentication verification
 - Add authentication checks to search_torrents() and download_torrent_file_bytes() in YggTorrentApi
 - Improve status() methods to return consistent dict format with "OK"/"KO" status
 - Move get_magnet_link() implementation from subclasses to BaseTorrentApi base
-
 ## [1.0.5] - 2026-01-13
 
 ### 💼 Changes
@@ -33,7 +45,7 @@
 - Add configurable torrent download folder and fix API endpoint paths
 
 - Add FOLDER_TORRENT_FILES environment variable to configure torrent file download location (default: ./torrents)
-- Change API endpoints from plural /torrents/_ to singular /torrent/_ for consistency
+- Change API endpoints from plural /torrents/* to singular /torrent/* for consistency
 - Make output_dir parameter optional in download_torrent_file methods, defaulting to configured folder
 - Add torrents folder to .gitignore
 - Fix test fixture scope and add monkeypatch_session parameter
@@ -42,8 +54,8 @@
 
 - Add torrents volume to compose.yaml with mount to configured FOLDER_TORRENT_FILES path
 - Remove eager initialization from FrTorrentApi constructor
-- Add explicit \_ensure_initialized() calls in FastAPI and MCP server entry points
-- Rename \_ensure_initialized to ensure_initialized and improve MCP tool return types
+- Add explicit _ensure_initialized() calls in FastAPI and MCP server entry points
+- Rename _ensure_initialized to ensure_initialized and improve MCP tool return types
 
 - Make ensure_initialized() public by removing underscore prefix
 - Update all calls to use new public method name
@@ -68,4 +80,4 @@
 - Consolidate torrent file download logic in BaseTorrentApi base class
 - Add cli() method to BaseTorrentApi for command line testing
 - Improve mock torrent data generation using bencodepy in tests
-- Update test IDs from y*/c* prefixes to yt*/lc* for consistency
+- Update test IDs from y_/c_ prefixes to yt_/lc_ for consistency
