@@ -93,7 +93,7 @@ class FrTorrentApi(BaseTorrentApi):
             max_workers=len(apis_to_use)
         ) as executor:
             future_to_api = {
-                executor.submit(api.search_torrents, query, max_items): api
+                executor.submit(api.search_torrents, query.lower(), max_items): api
                 for api in apis_to_use
             }
             for future in concurrent.futures.as_completed(future_to_api):
