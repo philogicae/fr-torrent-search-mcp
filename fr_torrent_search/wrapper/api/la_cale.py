@@ -2,7 +2,7 @@ import logging
 from typing import Any
 
 from ..models import Torrent
-from ..utils import format_date, format_size, get_env, get_env_bool
+from ..utils import format_date, format_size, get_env
 from .base import BaseTorrentApi
 
 logger = logging.getLogger(__name__)
@@ -17,14 +17,17 @@ class LaCaleApi(BaseTorrentApi):
     def __init__(self, base_url: str | None = None) -> None:
         """
         Initializes the API client.
+        DEPRECATED: La Cale is no longer available.
         """
         super().__init__(
             base_url or str(get_env("LA_CALE_DOMAIN", "https://la-cale.space"))
         )
         self.passkey = get_env("LA_CALE_PASSKEY")
-        self.enabled = bool(self.passkey) and get_env_bool("LA_CALE_ENABLE")
+        self.enabled = False
         if not self.passkey:
-            raise ValueError("LA_CALE_PASSKEY not found in .env file.")
+            logger.warning(
+                "LA_CALE_PASSKEY not found in .env file. La Cale is deprecated and disabled."
+            )
 
     def _format_torrent(self, torrent: dict[str, Any]) -> Torrent:
         """Converts a torrent data dictionary from the API into a Torrent model instance."""

@@ -43,7 +43,7 @@ This repository provides a Python wrapper for the FR Torrent websites and an MCP
 
 - API aggregator for multiple French torrent providers:
   - **YggTorrent**: Support via local bridge [UwUDev/ygege](https://github.com/UwUDev/ygege), check [compose.yaml](./compose.yaml).
-  - **La Cale**: Native support.
+  - **La Cale**: ~~Native support~~ **DEPRECATED** (service no longer available).
 - MCP server interface for standardized communication (stdio, sse, streamable-http)
 - FastAPI server interface for alternative HTTP access (e.g., for direct API calls or testing)
 - Tools:
@@ -57,7 +57,7 @@ This repository provides a Python wrapper for the FR Torrent websites and an MCP
 ### Prerequisites
 
 - Active account (for YggTorrent).
-- Passkey (for LaCale).
+- ~~Passkey (for LaCale)~~ **DEPRECATED**.
 - Python 3.10+ (required for PyPI install).
 - [`uv`](https://github.com/astral-sh/uv) (for local development)
 - Docker and Docker Compose (for Docker setup)
@@ -77,11 +77,11 @@ YGG_USERNAME=
 YGG_PASSWORD=
 #TURBO_ENABLED=true
 
-# LaCale Configuration
+# LaCale Configuration - DEPRECATED (service no longer available)
 #LA_CALE_ENABLE=0
 #LA_CALE_DOMAIN=la-cale.space
 # Find your passkey on https://la-cale.space/profile
-LA_CALE_PASSKEY=
+#LA_CALE_PASSKEY=
 
 # Target folder for torrent files (Default: ./torrents).
 #FOLDER_TORRENT_FILES=/path/to/target/folder
@@ -107,7 +107,7 @@ pip install fr-torrent-search-mcp
 YGG_USERNAME=your_ygg_username
 YGG_PASSWORD=your_ygg_password
 #TURBO_ENABLED=true
-LA_CALE_PASSKEY=your_la_cale_passkey
+# LA_CALE_PASSKEY=your_la_cale_passkey  # DEPRECATED
 #FOLDER_TORRENT_FILES=/path/to/target/folder
 ```
 

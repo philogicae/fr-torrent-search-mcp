@@ -21,7 +21,7 @@ def mock_env(monkeypatch_session):  # pylint: disable=redefined-outer-name
     """Set up environment variables for testing."""
     monkeypatch_session.setenv("FOLDER_TORRENT_FILES", getcwd())
     monkeypatch_session.setenv("YGG_LOCAL_API", "http://localhost:8715")
-    monkeypatch_session.setenv("LA_CALE_PASSKEY", "mock_passkey")
+    # monkeypatch_session.setenv("LA_CALE_PASSKEY", "mock_passkey")  # DEPRECATED
 
 
 @pytest.fixture(autouse=True, scope="session")
