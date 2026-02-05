@@ -1,3 +1,22 @@
+## [1.1.0] - 2026-02-05
+
+### 🐛 Bug Fixes
+
+- Fix: Deprecate La Cale support and update GitHub Actions workflow dependencies
+
+### 💼 Changes
+
+- Update CHANGELOG version from 1.0.6 to 1.0.7 and fix markdown formatting
+
+- Add version 1.0.7 entry with consolidated changes from recent commits
+- Fix escaped underscores in method names (_ensure_auth, _ensure_initialized)
+- Fix asterisk escaping in API endpoint paths (/torrents/* to /torrent/*)
+- Fix test ID prefix formatting (y_/c_ to yt_/lc_)
+- Remove extra blank line between version 1.0.6 entries
+
+### ⚙️ Miscellaneous Tasks
+
+- Chore: Update version from 1.0.7 to 1.1.0
 ## [1.0.7] - 2026-01-18
 
 ### 💼 Changes
