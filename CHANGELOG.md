@@ -1,3 +1,12 @@
+## [1.2.1] - 2026-03-04
+
+### 🐛 Bug Fixes
+
+- Fix: Export FrTorrentApi class instead of client instance for better API consistency
+
+### ⚙️ Miscellaneous Tasks
+
+- Chore: Update CHANGELOG version from 1.1.0 to 1.2.0
 ## [1.2.0] - 2026-03-04
 
 ### 🚀 Features
