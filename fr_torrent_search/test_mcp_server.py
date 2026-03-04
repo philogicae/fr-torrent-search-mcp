@@ -14,7 +14,9 @@ def mcp_client() -> Client[Any]:
 
 
 @pytest.mark.asyncio
-async def test_search_torrents(mcp_client: Client[Any]) -> None:
+async def test_search_torrents(
+    mcp_client: Client[Any],  # pylint: disable=redefined-outer-name
+) -> None:
     """Test the 'search_torrents' tool."""
     async with mcp_client as client:
         result = await client.call_tool(
@@ -25,10 +27,14 @@ async def test_search_torrents(mcp_client: Client[Any]) -> None:
 
 
 @pytest.mark.asyncio
-async def test_get_torrent(mcp_client: Client[Any]) -> None:
+async def test_get_torrent(
+    mcp_client: Client[Any],  # pylint: disable=redefined-outer-name
+) -> None:
     """Test the 'get_torrent' tool."""
     async with mcp_client as client:
-        result = await client.call_tool("get_torrent", {"torrent_id": "yt_fake_id"})
+        result = await client.call_tool(
+            "get_torrent", {"torrent_id": "lc_fake_id?token=fake_token"}
+        )
         assert result is not None and len(result.content[0].text) > 10
         file_path = path.join(getcwd(), result.content[0].text)
         if path.exists(file_path):
@@ -36,26 +42,22 @@ async def test_get_torrent(mcp_client: Client[Any]) -> None:
 
 
 @pytest.mark.asyncio
-async def test_get_magnet_link(mcp_client: Client[Any]) -> None:
-    """Test the 'get_magnet_link' tool."""
-    async with mcp_client as client:
-        result = await client.call_tool("get_magnet_link", {"torrent_id": "yt_fake_id"})
-        assert result is not None and len(result.content[0].text) > 32
-
-
-@pytest.mark.asyncio
-async def test_download_torrent_file(mcp_client: Client[Any]) -> None:
+async def test_download_torrent_file(
+    mcp_client: Client[Any],  # pylint: disable=redefined-outer-name
+) -> None:
     """Test the 'download_torrent_file' tool."""
     async with mcp_client as client:
         curr_dir = getcwd()
         result = await client.call_tool(
             "download_torrent_file",
             {
-                "torrent_id": "lc_fake_id",
+                "torrent_id": "lc_fake_id?token=fake_token",
                 "output_dir": curr_dir,
             },
         )
         assert result is not None and len(result.content[0].text) > 10
+        # Verify the filename is extracted correctly (should be "lc_fake_id.torrent")
+        assert result.content[0].text == "lc_fake_id.torrent"
         file_path = path.join(curr_dir, result.content[0].text)
         if path.exists(file_path):
             remove(file_path)

@@ -149,17 +149,6 @@ class FrTorrentApi(BaseTorrentApi):
             return api.get_torrent(torrent_id, **kwargs)
         return None
 
-    def status(self) -> dict[str, Any]:
-        """Check status of all APIs."""
-        self.ensure_initialized()
-        statuses = {}
-        for api in self.apis:
-            try:
-                statuses[api.__class__.__name__] = api.status() or {"status": "KO"}
-            except Exception:
-                statuses[api.__class__.__name__] = {"status": "KO"}
-        return statuses
-
 
 if __name__ == "__main__":
     FrTorrentApi().cli()

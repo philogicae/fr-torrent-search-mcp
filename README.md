@@ -42,8 +42,8 @@ This repository provides a Python wrapper for the FR Torrent websites and an MCP
 ## Features
 
 - API aggregator for multiple French torrent providers:
-  - **YggTorrent**: Support via local bridge [UwUDev/ygege](https://github.com/UwUDev/ygege), check [compose.yaml](./compose.yaml).
-  - **La Cale**: ~~Native support~~ **DEPRECATED** (service no longer available).
+  - **YggTorrent**: ~~Support via local bridge [UwUDev/ygege](https://github.com/UwUDev/ygege)~~ **DEPRECATED**
+  - **La Cale**: Native support (requires apikey).
 - MCP server interface for standardized communication (stdio, sse, streamable-http)
 - FastAPI server interface for alternative HTTP access (e.g., for direct API calls or testing)
 - Tools:
@@ -56,8 +56,8 @@ This repository provides a Python wrapper for the FR Torrent websites and an MCP
 
 ### Prerequisites
 
-- Active account (for YggTorrent).
-- ~~Passkey (for LaCale)~~ **DEPRECATED**.
+- Passkey (for LaCale). Find your apikey on https://la-cale.space/profile
+- ~~Active account (for YggTorrent)~~ **DEPRECATED**.
 - Python 3.10+ (required for PyPI install).
 - [`uv`](https://github.com/astral-sh/uv) (for local development)
 - Docker and Docker Compose (for Docker setup)
@@ -69,19 +69,10 @@ The application requires configuration for the supported providers.
 1.  **Set Environment Variables**: The application reads configuration from environment variables. The recommended way is by creating a `.env` file in your project's root directory.
 
 ```env
-# YGGTorrent Configuration
-#YGG_ENABLE=0
-#YGG_DOMAIN=www.yggtorrent.org
-#YGG_LOCAL_API=http://localhost:8715  # Local Ygg API
-YGG_USERNAME=
-YGG_PASSWORD=
-#TURBO_ENABLED=true
-
-# LaCale Configuration - DEPRECATED (service no longer available)
-#LA_CALE_ENABLE=0
+# LaCale Configuration
 #LA_CALE_DOMAIN=la-cale.space
-# Find your passkey on https://la-cale.space/profile
-#LA_CALE_PASSKEY=
+# Create your apikey on https://la-cale.space/settings/api-keys
+LA_CALE_API_KEY=
 
 # Target folder for torrent files (Default: ./torrents).
 #FOLDER_TORRENT_FILES=/path/to/target/folder
@@ -104,10 +95,7 @@ pip install fr-torrent-search-mcp
 2.  Create a `.env` file in the directory where you'll run the application and add your configuration:
 
 ```env
-YGG_USERNAME=your_ygg_username
-YGG_PASSWORD=your_ygg_password
-#TURBO_ENABLED=true
-# LA_CALE_PASSKEY=your_la_cale_passkey  # DEPRECATED
+LA_CALE_API_KEY=your_la_cale_passkey
 #FOLDER_TORRENT_FILES=/path/to/target/folder
 ```
 
@@ -135,7 +123,7 @@ cd fr-torrent-search-mcp
 uv sync --locked
 ```
 
-3.  Create your configuration file by copying the example and add your passkey:
+3.  Create your configuration file by copying the example and add your apikey:
 
 ```bash
 cp .env.example .env
@@ -151,7 +139,7 @@ uv run -m fr_torrent_search
 
 This method uses Docker to run the server in a container.
 
-[compose.yaml](./compose.yaml) is configured to bypass DNS issues (using [quad9](https://quad9.net/) DNS) and run a local Ygg API (Required for YggTorrent support).
+[compose.yaml](./compose.yaml) is configured to bypass DNS issues (using [quad9](https://quad9.net/) DNS).
 
 1.  Clone the repository (if you haven't already):
 
@@ -160,7 +148,7 @@ git clone https://github.com/philogicae/fr-torrent-search-mcp.git
 cd fr-torrent-search-mcp
 ```
 
-2.  Create your configuration file by copying the example and add your passkey:
+2.  Create your configuration file by copying the example and add your apikey:
 
 ```bash
 cp .env.example .env

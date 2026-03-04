@@ -174,15 +174,6 @@ class BaseTorrentApi(ABC):
             logger.error(f"Failed to get magnet link for {torrent_id}: {e}")
         return None
 
-    def status(self) -> dict[str, Any]:
-        """
-        Get the status of the API.
-
-        Returns:
-            The status as a dictionary.
-        """
-        raise NotImplementedError()
-
     def get_torrent_as(
         self, torrent_id: str, mode: Mode | str, **kwargs
     ) -> str | bytes | None:
@@ -197,7 +188,7 @@ class BaseTorrentApi(ABC):
             The .torrent filename, magnet link, .torrent bytes or None.
         """
         _mode: Mode = Mode(mode) if isinstance(mode, str) else mode
-        if mode not in self.order:
+        if _mode not in self.order:
             logger.error(f"Invalid mode: {_mode.value}")
         else:
             try:
@@ -234,7 +225,6 @@ class BaseTorrentApi(ABC):
         Command line interface for the API.
         """
         query = argv[1] if len(argv) > 1 else None
-        print(f"Status: {self.status()}")
         if query:
             found_torrents: list[Torrent] = self.search_torrents(query, max_items=100)
             if found_torrents:
@@ -245,9 +235,7 @@ class BaseTorrentApi(ABC):
                         f"{t.id} ({t.seeders}|{t.leechers}|{t.downloads}) - {t.filename}"
                     )
                 print(f"Fetching: {found_torrents[0].id}")
-                print(
-                    f"Result: {self.get_torrent_as(found_torrents[0].id, Mode.MAGNET)}"
-                )
+                print(f"Result: {self.get_torrent(found_torrents[0].id)}")
                 print(
                     f"Found Sources: {found_sources} | Found Torrents: {len(found_torrents)}"
                 )
