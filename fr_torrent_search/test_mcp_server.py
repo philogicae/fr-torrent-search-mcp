@@ -15,7 +15,7 @@ def mcp_client() -> Client[Any]:
 
 @pytest.mark.asyncio
 async def test_search_torrents(
-    mcp_client: Client[Any],  # pylint: disable=redefined-outer-name
+    mcp_client: Client[Any],
 ) -> None:
     """Test the 'search_torrents' tool."""
     async with mcp_client as client:
@@ -28,7 +28,7 @@ async def test_search_torrents(
 
 @pytest.mark.asyncio
 async def test_get_torrent(
-    mcp_client: Client[Any],  # pylint: disable=redefined-outer-name
+    mcp_client: Client[Any],
 ) -> None:
     """Test the 'get_torrent' tool."""
     async with mcp_client as client:
@@ -43,7 +43,7 @@ async def test_get_torrent(
 
 @pytest.mark.asyncio
 async def test_download_torrent_file(
-    mcp_client: Client[Any],  # pylint: disable=redefined-outer-name
+    mcp_client: Client[Any],
 ) -> None:
     """Test the 'download_torrent_file' tool."""
     async with mcp_client as client:

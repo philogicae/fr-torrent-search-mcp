@@ -1,4 +1,3 @@
-# pylint: disable=protected-access
 from os import getcwd
 from unittest.mock import patch
 
@@ -17,7 +16,7 @@ def monkeypatch_session():
 
 
 @pytest.fixture(autouse=True, scope="session")
-def mock_env(monkeypatch_session):  # pylint: disable=redefined-outer-name
+def mock_env(monkeypatch_session):
     """Set up environment variables for testing."""
     monkeypatch_session.setenv("FOLDER_TORRENT_FILES", getcwd())
     monkeypatch_session.setenv("LA_CALE_API_KEY", "mock_passkey")
@@ -28,7 +27,7 @@ def mock_torrent_apis():
     """Mock La Cale API responses for local testing."""
     with patch("requests.Session.request") as mock_request:
 
-        def side_effect(method, url, *args, **kwargs):  # pylint: disable=unused-argument
+        def side_effect(method, url, *args, **kwargs):
             mock_response = requests.Response()
             mock_response.status_code = 200
             mock_response.headers = {"Content-Type": "application/json"}

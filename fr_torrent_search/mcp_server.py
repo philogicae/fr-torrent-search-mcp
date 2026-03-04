@@ -9,8 +9,16 @@ logger = logging.getLogger(__name__)
 mcp: FastMCP[Any] = FastMCP("Fr Torrent Search")
 
 
-client = FrTorrentApi()
-client.ensure_initialized()
+client: FrTorrentApi | None = None
+
+
+def get_client() -> FrTorrentApi:
+    """Get or create the FrTorrentApi client."""
+    global client
+    if client is None:
+        client = FrTorrentApi()
+        client.ensure_initialized()
+    return client
 
 
 @mcp.tool()
@@ -50,7 +58,7 @@ def search_torrents(
     logger.info(
         f"Searching for torrents: {query} (intent: {user_intent}), max_items: {max_items}"
     )
-    torrents = client.search_torrents(query, max_items)
+    torrents = get_client().search_torrents(query, max_items)
     return "\n".join([str(torrent) for torrent in torrents])
 
 
@@ -58,7 +66,7 @@ def search_torrents(
 def get_torrent(torrent_id: str) -> str:
     """Get a specific torrent (either magnet link or torrent file path) by id."""
     logger.info(f"Getting torrent for: {torrent_id}")
-    result = client.get_torrent(torrent_id)
+    result = get_client().get_torrent(torrent_id)
     if isinstance(result, bytes):
         return "Received raw bytes, not supported via this tool."
     return result or "Torrent not found"
@@ -68,7 +76,7 @@ def get_torrent(torrent_id: str) -> str:
 def get_magnet_link(torrent_id: str) -> str:
     """Get the magnet link for a specific torrent by id."""
     logger.info(f"Getting magnet link for torrent: {torrent_id}")
-    magnet_link = client.get_magnet_link(torrent_id)
+    magnet_link = get_client().get_magnet_link(torrent_id)
     return magnet_link or "Magnet link not found"
 
 
@@ -76,5 +84,5 @@ def get_magnet_link(torrent_id: str) -> str:
 def download_torrent_file(torrent_id: str, output_dir: str | None = None) -> str:
     """Download the torrent file for a specific torrent by id."""
     logger.info(f"Downloading torrent file for torrent: {torrent_id}")
-    result = client.download_torrent_file(torrent_id, output_dir)
+    result = get_client().download_torrent_file(torrent_id, output_dir)
     return result or "Failed to download torrent file"
