@@ -1,3 +1,17 @@
+## [1.2.0] - 2026-03-04
+
+### 🚀 Features
+
+- Feat: Deprecate YggTorrent support and migrate to La Cale API with token-based authentication
+
+### 🐛 Bug Fixes
+
+- Fix: Remove explicit fr_torrent_search path from CI workflow commands
+- Fix: Remove pylint disable comments and refactor client initialization to lazy loading pattern
+
+### 💼 Changes
+
+- Update CHANGELOG version from 1.0.7 to 1.1.0
 ## [1.1.0] - 2026-02-05
 
 ### 🐛 Bug Fixes
