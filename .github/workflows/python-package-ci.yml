@@ -19,13 +19,13 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked --dev
       - name: Run ruff format
-        run: uv run ruff format fr_torrent_search
+        run: uv run ruff format
       - name: Run ruff check
-        run: uv run ruff check fr_torrent_search
+        run: uv run ruff check
       - name: Run ty check
-        run: uv run ty check fr_torrent_search
+        run: uv run ty check
       - name: Run tests
-        run: uv run pytest fr_torrent_search
+        run: uv run pytest
 
   build:
     name: Build distribution 📦
