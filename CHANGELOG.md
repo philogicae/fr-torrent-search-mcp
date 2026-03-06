@@ -1,3 +1,12 @@
+## [1.3.0] - 2026-03-06
+
+### 🚀 Features
+
+- Feat: Re-enable YggTorrent support via local bridge API with magnet link functionality
+
+### ⚙️ Miscellaneous Tasks
+
+- Chore: Update CHANGELOG version from 1.2.0 to 1.2.1
 ## [1.2.1] - 2026-03-04
 
 ### 🐛 Bug Fixes
