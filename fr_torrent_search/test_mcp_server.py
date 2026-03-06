@@ -42,6 +42,16 @@ async def test_get_torrent(
 
 
 @pytest.mark.asyncio
+async def test_get_magnet_link(
+    mcp_client: Client[Any],
+) -> None:
+    """Test the 'get_magnet_link' tool."""
+    async with mcp_client as client:
+        result = await client.call_tool("get_magnet_link", {"torrent_id": "yt_fake_id"})
+        assert result is not None and len(result.content[0].text) > 32
+
+
+@pytest.mark.asyncio
 async def test_download_torrent_file(
     mcp_client: Client[Any],
 ) -> None:

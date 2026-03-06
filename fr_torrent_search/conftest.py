@@ -19,12 +19,13 @@ def monkeypatch_session():
 def mock_env(monkeypatch_session):
     """Set up environment variables for testing."""
     monkeypatch_session.setenv("FOLDER_TORRENT_FILES", getcwd())
+    monkeypatch_session.setenv("YGG_LOCAL_API", "http://localhost:8715")
     monkeypatch_session.setenv("LA_CALE_API_KEY", "mock_passkey")
 
 
 @pytest.fixture(autouse=True, scope="session")
 def mock_torrent_apis():
-    """Mock La Cale API responses for local testing."""
+    """Mock YGG and La Cale API responses for local testing."""
     with patch("requests.Session.request") as mock_request:
 
         def side_effect(method, url, *args, **kwargs):
@@ -44,6 +45,21 @@ def mock_torrent_apis():
                     },
                 }
             )
+
+            # YGG API (localhost:8715 or specific IP)
+            if ":8715" in url:
+                if url.endswith("/categories"):
+                    mock_response._content = b'[{"id": 1, "name": "Film", "sub_categories": [{"id": 2, "name": "Animation"}]}, {"id": 3, "name": "S\xc3\xa9rie"}]'
+                elif "/search" in url:
+                    mock_response._content = b'[{"id": "fake_id", "name": "Berserk Ygg Mock", "category_id": 2, "size": 524288000, "seed": 100, "leech": 10, "completed": 50, "age_stamp": 1700000000}]'
+                elif "/torrent/" in url:
+                    mock_response.headers = {"Content-Type": "text/plain"}
+                    mock_response._content = (
+                        b"magnet:?xt=urn:btih:fake_hash&dn=Berserk+Ygg+Mock"
+                    )
+                else:
+                    mock_response.status_code = 404
+                return mock_response
 
             # La Cale API (la-cale.space)
             if "la-cale.space" in url:
