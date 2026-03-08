@@ -1,3 +1,10 @@
+## [1.3.1] - 2026-03-08
+
+### ⚙️ Miscellaneous Tasks
+
+- Chore: Update CHANGELOG version from 1.2.1 to 1.3.0
+- Chore: Update version from 1.3.0 to 1.3.1 and switch YggTorrent API image to uwucode/ygege:latest
+
 ## [1.3.0] - 2026-03-06
 
 ### 🚀 Features
@@ -7,6 +14,7 @@
 ### ⚙️ Miscellaneous Tasks
 
 - Chore: Update CHANGELOG version from 1.2.0 to 1.2.1
+
 ## [1.2.1] - 2026-03-04
 
 ### 🐛 Bug Fixes
@@ -16,6 +24,7 @@
 ### ⚙️ Miscellaneous Tasks
 
 - Chore: Update CHANGELOG version from 1.1.0 to 1.2.0
+
 ## [1.2.0] - 2026-03-04
 
 ### 🚀 Features
@@ -30,6 +39,7 @@
 ### 💼 Changes
 
 - Update CHANGELOG version from 1.0.7 to 1.1.0
+
 ## [1.1.0] - 2026-02-05
 
 ### 🐛 Bug Fixes
@@ -41,14 +51,15 @@
 - Update CHANGELOG version from 1.0.6 to 1.0.7 and fix markdown formatting
 
 - Add version 1.0.7 entry with consolidated changes from recent commits
-- Fix escaped underscores in method names (_ensure_auth, _ensure_initialized)
-- Fix asterisk escaping in API endpoint paths (/torrents/* to /torrent/*)
-- Fix test ID prefix formatting (y_/c_ to yt_/lc_)
+- Fix escaped underscores in method names (\_ensure_auth, \_ensure_initialized)
+- Fix asterisk escaping in API endpoint paths (/torrents/_ to /torrent/_)
+- Fix test ID prefix formatting (y*/c* to yt*/lc*)
 - Remove extra blank line between version 1.0.6 entries
 
 ### ⚙️ Miscellaneous Tasks
 
 - Chore: Update version from 1.0.7 to 1.1.0
+
 ## [1.0.7] - 2026-01-18
 
 ### 💼 Changes
@@ -62,6 +73,7 @@
 - Change quality preference from "x265" to "h265" for consistency
 - Remove preference against 4k quality in favor of 1080p or 4k over 720p
 - Ensure query is lowercased in FrTorrentApi.search_torrents()
+
 ## [1.0.6] - 2026-01-15
 
 ### 💼 Changes
@@ -77,11 +89,12 @@
 - Fix topo_order_commits comment from "releases" to "commits"
 - Add authentication checks and improve error handling across API implementations
 
-- Add _ensure_auth() method to YggTorrentApi to verify authentication before requests
+- Add \_ensure_auth() method to YggTorrentApi to verify authentication before requests
 - Add get_user() endpoint to YggTorrentApi for authentication verification
 - Add authentication checks to search_torrents() and download_torrent_file_bytes() in YggTorrentApi
 - Improve status() methods to return consistent dict format with "OK"/"KO" status
 - Move get_magnet_link() implementation from subclasses to BaseTorrentApi base
+
 ## [1.0.5] - 2026-01-13
 
 ### 💼 Changes
@@ -96,7 +109,7 @@
 - Add configurable torrent download folder and fix API endpoint paths
 
 - Add FOLDER_TORRENT_FILES environment variable to configure torrent file download location (default: ./torrents)
-- Change API endpoints from plural /torrents/* to singular /torrent/* for consistency
+- Change API endpoints from plural /torrents/_ to singular /torrent/_ for consistency
 - Make output_dir parameter optional in download_torrent_file methods, defaulting to configured folder
 - Add torrents folder to .gitignore
 - Fix test fixture scope and add monkeypatch_session parameter
@@ -105,8 +118,8 @@
 
 - Add torrents volume to compose.yaml with mount to configured FOLDER_TORRENT_FILES path
 - Remove eager initialization from FrTorrentApi constructor
-- Add explicit _ensure_initialized() calls in FastAPI and MCP server entry points
-- Rename _ensure_initialized to ensure_initialized and improve MCP tool return types
+- Add explicit \_ensure_initialized() calls in FastAPI and MCP server entry points
+- Rename \_ensure_initialized to ensure_initialized and improve MCP tool return types
 
 - Make ensure_initialized() public by removing underscore prefix
 - Update all calls to use new public method name
@@ -131,4 +144,4 @@
 - Consolidate torrent file download logic in BaseTorrentApi base class
 - Add cli() method to BaseTorrentApi for command line testing
 - Improve mock torrent data generation using bencodepy in tests
-- Update test IDs from y_/c_ prefixes to yt_/lc_ for consistency
+- Update test IDs from y*/c* prefixes to yt*/lc* for consistency
