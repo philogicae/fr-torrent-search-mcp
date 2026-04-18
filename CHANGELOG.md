@@ -1,3 +1,13 @@
+## [1.3.2] - 2026-04-18
+
+### 🐛 Bug Fixes
+
+- Fix: Update version to 1.3.2 and switch YggTorrent API image, fix test mocks to use CaseInsensitiveDict for headers
+
+### ⚙️ Miscellaneous Tasks
+
+- Chore: Update CHANGELOG
+
 ## [1.3.1] - 2026-03-08
 
 ### ⚙️ Miscellaneous Tasks
