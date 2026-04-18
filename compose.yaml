@@ -16,7 +16,7 @@ x-logging: &default-logging
 
 services:
   ygg-api:
-    image: uwucode/ygege:latest
+    image: ghcr.io/uwudev/ygege:develop-noupx
     container_name: ygg-api
     restart: unless-stopped
     ports:

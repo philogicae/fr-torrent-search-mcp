@@ -5,6 +5,7 @@ import pytest
 import requests
 from _pytest.monkeypatch import MonkeyPatch
 from bencodepy import encode
+from requests.structures import CaseInsensitiveDict
 
 
 @pytest.fixture(scope="session")
@@ -31,7 +32,9 @@ def mock_torrent_apis():
         def side_effect(method, url, *args, **kwargs):
             mock_response = requests.Response()
             mock_response.status_code = 200
-            mock_response.headers = {"Content-Type": "application/json"}
+            mock_response.headers = CaseInsensitiveDict(
+                {"Content-Type": "application/json"}
+            )
             mock_torrent_bytes = encode(
                 {
                     "announce": "http://fake.tracker.com:80/announce",
@@ -53,7 +56,9 @@ def mock_torrent_apis():
                 elif "/search" in url:
                     mock_response._content = b'[{"id": "fake_id", "name": "Berserk Ygg Mock", "category_id": 2, "size": 524288000, "seed": 100, "leech": 10, "completed": 50, "age_stamp": 1700000000}]'
                 elif "/torrent/" in url:
-                    mock_response.headers = {"Content-Type": "text/plain"}
+                    mock_response.headers = CaseInsensitiveDict(
+                        {"Content-Type": "text/plain"}
+                    )
                     mock_response._content = (
                         b"magnet:?xt=urn:btih:fake_hash&dn=Berserk+Ygg+Mock"
                     )
@@ -66,7 +71,9 @@ def mock_torrent_apis():
                 if "/api/external" in url:
                     mock_response._content = b'[{"infoHash": "fake_id", "title": "Berserk La Cale Mock", "category": "Animation", "size": 629145600, "seeders": 150, "leechers": 20, "pubDate": "2023-11-15T12:00:00Z", "downloadLink": ".../api/download/fake_id?token=fake_token"}]'
                 elif "/api/download/" in url:
-                    mock_response.headers = {"Content-Type": "application/x-bittorrent"}
+                    mock_response.headers = CaseInsensitiveDict(
+                        {"Content-Type": "application/x-bittorrent"}
+                    )
                     mock_response._content = mock_torrent_bytes
                 else:
                     mock_response.status_code = 404
