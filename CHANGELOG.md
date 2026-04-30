@@ -1,3 +1,10 @@
+## [1.3.3] - 2026-04-30
+
+### ⚙️ Miscellaneous Tasks
+
+- Chore: Update CHANGELOG
+- Chore: Update deps
+
 ## [1.3.2] - 2026-04-18
 
 ### 🐛 Bug Fixes
