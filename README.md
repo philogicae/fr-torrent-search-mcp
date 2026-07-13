@@ -1,3 +1,5 @@
+> ⚠️ **DEPRECATED**: This project is no longer actively maintained. The underlying FR Torrent websites have become unreliable and may stop working at any time. Use at your own risk.
+
 # FR Torrent MCP Server & Wrapper
 
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://docs.astral.sh/uv/getting-started/installation/)

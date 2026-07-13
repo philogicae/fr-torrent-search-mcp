@@ -1,3 +1,10 @@
+## [1.4.0] - 2026-07-13
+
+### ⚙️ Miscellaneous Tasks
+
+- Chore: Update CHANGELOG
+- Chore: Remove La Cale support, update Python to 3.14, and improve CI workflow
+
 ## [1.3.3] - 2026-04-30
 
 ### ⚙️ Miscellaneous Tasks
