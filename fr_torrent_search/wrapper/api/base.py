@@ -76,7 +76,8 @@ class BaseTorrentApi(ABC):
                 location = response.headers.get("Location")
                 if location and location.startswith("magnet:"):
                     return location
-                # For normal HTTP redirects, follow them
+                if not location:
+                    return None
                 return self._request(
                     method, location, params=params, json=json_data, **kwargs
                 )

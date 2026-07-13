@@ -1,4 +1,3 @@
-from os import getcwd, path, remove
 from typing import Any
 
 import pytest
@@ -26,11 +25,12 @@ async def test_search_torrents(
         assert result is not None and len(result.content[0].text) > 32
 
 
-@pytest.mark.asyncio
+# Deprecated La Cale test
+""" @pytest.mark.asyncio
 async def test_get_torrent(
     mcp_client: Client[Any],
 ) -> None:
-    """Test the 'get_torrent' tool."""
+    ""Test the 'get_torrent' tool.""
     async with mcp_client as client:
         result = await client.call_tool(
             "get_torrent", {"torrent_id": "lc_fake_id?token=fake_token"}
@@ -38,7 +38,7 @@ async def test_get_torrent(
         assert result is not None and len(result.content[0].text) > 10
         file_path = path.join(getcwd(), result.content[0].text)
         if path.exists(file_path):
-            remove(file_path)
+            remove(file_path) """
 
 
 @pytest.mark.asyncio
@@ -51,11 +51,12 @@ async def test_get_magnet_link(
         assert result is not None and len(result.content[0].text) > 32
 
 
-@pytest.mark.asyncio
+# Deprecated La Cale test
+""" @pytest.mark.asyncio
 async def test_download_torrent_file(
     mcp_client: Client[Any],
 ) -> None:
-    """Test the 'download_torrent_file' tool."""
+    ""Test the 'download_torrent_file' tool.""
     async with mcp_client as client:
         curr_dir = getcwd()
         result = await client.call_tool(
@@ -70,4 +71,4 @@ async def test_download_torrent_file(
         assert result.content[0].text == "lc_fake_id.torrent"
         file_path = path.join(curr_dir, result.content[0].text)
         if path.exists(file_path):
-            remove(file_path)
+            remove(file_path) """

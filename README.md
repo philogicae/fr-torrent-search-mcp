@@ -42,8 +42,9 @@ This repository provides a Python wrapper for the FR Torrent websites and an MCP
 ## Features
 
 - API aggregator for multiple French torrent providers:
-  - **YggTorrent (now ygg.gratis)**: Support via local bridge [UwUDev/ygege Fork](https://github.com/UwUDev/ygege/pull/197)
-  - **La Cale**: Native support (requires apikey).
+  - **YggTorrent (now ygg.gratis)**: Support via local bridge [UwUDev/francisca](https://github.com/uwudev/francisca)
+  - ~~**La Cale (la-cale.space)**~~: Dead — source is no longer available.
+  - **TODO**: Add support for torr9.net and others
 - MCP server interface for standardized communication (stdio, sse, streamable-http)
 - FastAPI server interface for alternative HTTP access (e.g., for direct API calls or testing)
 - Tools:
@@ -59,14 +60,10 @@ This repository provides a Python wrapper for the FR Torrent websites and an MCP
 - Python 3.10+ (required for PyPI install).
 - [`uv`](https://github.com/astral-sh/uv) (for local development)
 - Docker and Docker Compose (for Docker setup)
-- Passkey for LaCale (Optional). Create your apikey on https://la-cale.space/settings/api-keys
 
 ### Configuration (Optional)
 
-This application requires credentials if you want to interact with La Cale.
-
-1.  **La Cale**: Find your API key on the La Cale website.
-3.  **Set Environment Variables**: The application reads configuration from environment variables. The recommended way to set them is by creating a `.env` file in your project's root directory. The application will load it automatically. See `.env.example` for all available options.
+The application reads configuration from environment variables. The recommended way to set them is by creating a `.env` file in your project's root directory. The application will load it automatically. See `.env.example` for all available options.
 
 ### Installation
 
@@ -85,7 +82,6 @@ pip install fr-torrent-search-mcp
 2.  Create a `.env` file in the directory where you'll run the application and add your configuration:
 
 ```env
-LA_CALE_API_KEY=your_la_cale_passkey
 #FOLDER_TORRENT_FILES=/path/to/target/folder
 ```
 
@@ -110,10 +106,10 @@ cd fr-torrent-search-mcp
 2.  Install dependencies using `uv`:
 
 ```bash
-uv sync --locked
+uv sync --frozen
 ```
 
-3.  Create your configuration file by copying the example and add your apikey:
+3.  Create your configuration file by copying the example:
 
 ```bash
 cp .env.example .env
@@ -138,7 +134,7 @@ git clone https://github.com/philogicae/fr-torrent-search-mcp.git
 cd fr-torrent-search-mcp
 ```
 
-2.  Create your configuration file by copying the example and add your apikey:
+2.  Create your configuration file by copying the example:
 
 ```bash
 cp .env.example .env

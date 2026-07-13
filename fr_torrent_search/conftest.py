@@ -4,7 +4,8 @@ from unittest.mock import patch
 import pytest
 import requests
 from _pytest.monkeypatch import MonkeyPatch
-from bencodepy import encode
+
+# from bencodepy import encode
 from requests.structures import CaseInsensitiveDict
 
 
@@ -21,12 +22,11 @@ def mock_env(monkeypatch_session):
     """Set up environment variables for testing."""
     monkeypatch_session.setenv("FOLDER_TORRENT_FILES", getcwd())
     monkeypatch_session.setenv("YGG_LOCAL_API", "http://localhost:8715")
-    monkeypatch_session.setenv("LA_CALE_API_KEY", "mock_passkey")
 
 
 @pytest.fixture(autouse=True, scope="session")
 def mock_torrent_apis():
-    """Mock YGG and La Cale API responses for local testing."""
+    """Mock YGG API responses for local testing."""
     with patch("requests.Session.request") as mock_request:
 
         def side_effect(method, url, *args, **kwargs):
@@ -35,7 +35,8 @@ def mock_torrent_apis():
             mock_response.headers = CaseInsensitiveDict(
                 {"Content-Type": "application/json"}
             )
-            mock_torrent_bytes = encode(
+            # Deprecated La Cale test
+            """ mock_torrent_bytes = encode(
                 {
                     "announce": "http://fake.tracker.com:80/announce",
                     "info": {
@@ -47,7 +48,7 @@ def mock_torrent_apis():
                         ],
                     },
                 }
-            )
+            ) """
 
             # YGG API (localhost:8715 or specific IP)
             if ":8715" in url:
@@ -66,8 +67,8 @@ def mock_torrent_apis():
                     mock_response.status_code = 404
                 return mock_response
 
-            # La Cale API (la-cale.space)
-            if "la-cale.space" in url:
+            # Deprecated La Cale test
+            """ if "la-cale.space" in url:
                 if "/api/external" in url:
                     mock_response._content = b'[{"infoHash": "fake_id", "title": "Berserk La Cale Mock", "category": "Animation", "size": 629145600, "seeders": 150, "leechers": 20, "pubDate": "2023-11-15T12:00:00Z", "downloadLink": ".../api/download/fake_id?token=fake_token"}]'
                 elif "/api/download/" in url:
@@ -77,7 +78,7 @@ def mock_torrent_apis():
                     mock_response._content = mock_torrent_bytes
                 else:
                     mock_response.status_code = 404
-                return mock_response
+                return mock_response """
 
             # Fallback for other requests
             mock_response.status_code = 404

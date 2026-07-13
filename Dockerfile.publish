@@ -1,4 +1,4 @@
-FROM python:3.13-alpine AS runner
+FROM python:3.14-alpine AS runner
 RUN pip install --upgrade pip
 ARG VERSION
 RUN pip install fr-torrent-search-mcp==$VERSION
